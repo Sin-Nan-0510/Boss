@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8" />
+        <title>活動資訊</title>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet" />
+        <style>
+            /* ==========================================================================
+               CSS 樣式表開始 (視覺風格：浪漫大人系輕甜風)
+               ========================================================================== */
+
+            /* 背景顏色選擇器外殼：懸浮在右上角，採用半透明與毛玻璃質感，像精緻的化妝盒 */
+            .color-picker {
+                position: fixed;               /* 固定定位：不隨網頁捲動而移動 */
+                top: 20px;                     /* 距離視窗上方 20px */
+                right: 20px;                   /* 距離視窗右方 20px */
+                display: flex;                 /* 彈性盒模型：讓內部的顏色圓圈橫向排列 */
+                gap: 12px;                     /* 圓圈之間的間距加寬至 12px，視覺更舒暢 */
+                z-index: 999;                  /* 圖層最高級：確保不會被其他圖片或內容遮擋 */
+                background: rgba(255, 255, 255, 0.4); /* 半透明純白底色 */
+                padding: 8px 12px;             /* 內距：上下 8px，左右 12px */
+                border-radius: 30px;           /* 膠囊膠狀的超圓潤邊框 */
+                backdrop-filter: blur(5px);    /* 關鍵：毛玻璃背景模糊效果 */
+                border: 1px solid rgba(255, 255, 255, 0.6); /* 細緻的半透明白邊框 */
+            }
+
+            /* 顏色選擇器的圓圈個體：像小巧的小彩蛋 */
+            .color-circle {
+                width: 22px;                   /* 寬度 22px */
+                height: 22px;                  /* 高度 22px */
+                border-radius: 50%;            /* 完美圓形 */
+                border: 2px solid white;       /* 白色外框線 2px */
+                cursor: pointer;               /* 滑鼠移入時顯示為手指 */
+                /* 動畫過渡：採用貝氏曲線 (cubic-bezier)，讓放大縮小時帶有Q彈的律動感 */
+                transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 微弱的陰影增加立體感 */
+            }
+
+            /* 當滑鼠懸停在顏色圓圈上時 */
+            .color-circle:hover {
+                transform: scale(1.3);         /* 絲滑地放大 1.3 倍 */
+            }
+
+            /* 音樂播放器樣式：重塑為白金質感的網美系懸浮窗 */
+            .music-player {
+                position: fixed;               /* 固定定位 */
+                left: 20px;                    /* 距離瀏覽器視窗左側 20px */
+                bottom: 20px;                  /* 電腦版維持舒適的底部 20px */
+                z-index: 99999;                /* 最高圖層，防止被櫻花或任何內容擋住 */
+                width: 300px;                  /* 電腦版播放器寬度 300px */
+                background: rgba(255, 255, 255, 0.85); /* 溫柔的珍珠白半透明底色 */
+                border-radius: 20px;           /* 柔和的大圓角 */
+                box-shadow: 0 10px 30px rgba(163, 122, 142, 0.3); /* 帶有乾燥玫瑰粉色調的優雅深陰影 */
+                border: 1px solid rgba(255, 255, 255, 0.7); /* 頂級白金邊框質感 */
+                backdrop-filter: blur(10px);   /* 強效毛玻璃模糊，阻絕背景雜亂 */
+                padding: 5px;                  /* 內距 */
+            }
+
+            /* 針對手機螢幕的 RWD 修正（徹底解決手機點擊問題，且維持小巧外觀） */
+            @media (max-width: 900px) {
+                .music-player {
+                    left: 20px !important;     /* 手機版依然縮在左側 */
+                    bottom: 120px !important;  /* 拉高 120px 彈出 iOS 底部工具列與小黑條 */
+                    bottom: calc(120px + env(safe-area-inset-bottom)) !important; /* 安全區域雙重保障 */
+                    width: 230px !important;   /* 手機版縮小到 230px，精緻不擋網頁內容 */
+                }
+            }
+
+            /* 全域 CSS 變數設定 */
+            :root {
+                --space-left-middle: 50px;     /* 左欄與中欄的間距加寬 */
+                --space-middle-right: 50px;    /* 中欄與右欄的間距加寬 */
+                --title-height: 60px;          /* 標題欄的統一高度 */
+                --btn-radius: 20px;            /* 按鈕全面改為 20px 的大圓角，完全消除視覺攻擊性 */
+                --text-main: #4a3e3d;          /* 全域主文字改為溫柔的「深可可色」，代替死黑 */
+            }
+
+            /* 全網頁基礎設定 */
+            body {
+                background-color: #f7ede2;     /* 網頁預設背景色改為超療癒的「燕麥奶茶色」 */
+                margin: 0;                     /* 移除瀏覽器預設邊距 */
+                font-family: "Noto Serif TC", "Microsoft JhengHei", serif; /* 優雅明體字型優先 */
+                color: var(--text-main);       /* 套用溫柔可可色文字 */
+                overflow-x: hidden;            /* 隱藏橫向捲軸 */
+                transition: background-color 0.5s ease; /* 當換背景顏色時，會呈現 0.5 秒的漸變絲滑效果 */
+            }
+
+            /* 主內容包覆容器 */
+            .container {
+                margin-top: 90px;              /* 上方留空 90px 給漢堡選單與顏色選擇器 */
+                display: flex;                 /* 啟用 Flexbox 排版 */
+                flex-wrap: wrap;               /* 寬度不足時自動換行 */
+                padding: 20px 40px;            /* 內距設定 */
+                justify-content: center;       /* 將卡片區塊置中排列，視覺平衡更好 */
+            }
+
+            /* 浪漫卡片質感（左欄與中欄共同繼承此美化樣式） */
+            .info, .links {
+                background: rgba(255, 255, 255, 0.75); /* 純白底色搭配 75% 透明度，輕盈無負擔 */
+                backdrop-filter: blur(10px);   /* 卡片本身也有毛玻璃效果，透出背景櫻花 */
+                border: 1px solid rgba(255, 255, 255, 0.6); /* 細緻白邊 */
+                border-radius: 24px;           /* 超溫柔大圓角卡片 */
+                padding: 30px 25px;            /* 內部舒適內距 */
+                box-shadow: 0 10px 30px rgba(165, 143, 134, 0.15); /* 輕柔的奶茶色系陰影 */
+                box-sizing: border-box;        /* 邊框計算包含在寬度內 */
+            }
+
+            /* 左欄：活動資訊區 */
+            .info {
+                flex: 0 1 340px;               /* 基礎寬度 340px，允許微調彈性縮放 */
+                line-height: 2.1;              /* 微調行高，讓密集文字更容易閱讀 */
+                letter-spacing: 1.5px;         /* 字距微寬，呈現高級感 */
+                margin-right: var(--space-left-middle); /* 右邊距套用變數 */
+                text-align: center;            /* 文字內容置中 */
+                font-size: 0.95em;             /* 微調字級 */
+            }
+
+            /* 加強左欄中特定強調文字（優化為高質感的莫蘭迪粉色小標籤標籤） */
+            .info .t-red, 
+            .info .t-purple {
+                font-size: 1.15em;
+                font-weight: 600;
+                padding: 2px 10px;             /* 加上精緻的膠囊背景內距 */
+                border-radius: 10px;           /* 圓角邊框 */
+                display: inline-block;         /* 轉為行內區塊 */
+            }
+            .info .t-red { background: #ffe5e5; color: #d65a5a; }    /* 莫蘭迪柔粉標籤 */
+            .info .t-purple { background: #f3e8ff; color: #8b5cf6; } /* 莫蘭迪柔紫標籤 */
+
+            /* 左欄與中欄標題樣式（棄用原本粗糙的金黃色與黑陰影，換成氣質霧粉金） */
+            .info-title, .links-title {
+                text-align: center;
+                font-size: 1.4em;
+                font-weight: 600;
+                padding-bottom: 12px;
+                border-bottom: 2px dashed #e5ccbf; /* 改為優雅溫暖的「日系法式針織虛線」 */
+                width: 100%;
+                box-sizing: border-box;
+                height: var(--title-height);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 25px;
+                color: #b57c68;                /* 高貴的玫瑰金/霧粉棕色 */
+                text-shadow: none;             /* 徹底移除刺眼的黑色字體陰影 */
+                letter-spacing: 4px;           /* 標題字距拉開，呈現文青質感 */
+            }
+
+            /* 中欄：報名連結區 */
+            .links {
+                flex: 0 1 320px;               /* 基礎寬度 320px */
+                margin-right: var(--space-middle-right); /* 右邊距套用變數 */
+            }
+
+            /* 中欄按鈕樣式 */
+            .links .btn {
+                display: block;                /* 區塊化獨佔一行 */
+                text-align: center;            /* 文字置中 */
+                padding: 14px;                 /* 按鈕上下左右內距 */
+                margin-bottom: 14px;           /* 按鈕間的垂直距離 */
+                border-radius: var(--btn-radius); /* 套用超圓潤變數圓角 */
+                color: #fff;                   /* 按鈕文字為純白 */
+                font-weight: 600;              /* 半粗體 */
+                text-decoration: none;         /* 移除超連結底線 */
+                font-size: 1em;                
+                letter-spacing: 1px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* 給按鈕一絲輕盈懸浮的微陰影 */
+                /* 當滑鼠移入時，放大、上浮、投影增強的動畫時間為 0.3 秒，物理反饋極佳 */
+                transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1), filter 0.2s, box-shadow 0.3s;
+            }
+
+            /* 當滑鼠懸停在報名按鈕上時 */
+            .links .btn:hover {
+                transform: translateY(-3px) scale(1.03); /* 不僅放大，還優雅地向上漂移 3px (網美UI經典手法) */
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* 下方陰影加深，營造真正立體感 */
+            }
+
+            /* 右欄：圖片顯示區 */
+            .images {
+                flex: 0 0 320px;               /* 固定基礎寬度 320px */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* 右欄預設圖片樣式：改造成「日系拍立得相框」質感 */
+            .images img {
+                width: 100%;                   /* 修正原本 150% 容易在外層爆版的問題，完美自適應 */
+                border-radius: 24px;           /* 大圓角邊框 */
+                box-shadow: 0 15px 35px rgba(165, 143, 134, 0.25); /* 柔和深邃的卡片大陰影 */
+                border: 4px solid #fff;        /* 4px 厚度的白色純淨外框（拍立得感） */
+                background: #fff;
+            }
+
+            /* 右欄特例：拉圖斯 Boss 圖片的特別縮放樣式 */
+            .images .boss-img {
+                width: 80%;                    /* 維持拉圖斯較精巧的 80% 寬度 */
+                border-radius: 24px;
+                box-shadow: 0 15px 35px rgba(165, 143, 134, 0.25);
+                border: 4px solid #fff;
+                background: #fff;
+            }
+
+            /* 網頁公用文字顏色樣式表 (調整為低飽和度的「莫蘭迪/粉嫩色系」，完美融入淺色背景不刺眼) */
+            .t-red { color: #c94a4a; font-weight: 600; }    /* 櫻桃深紅 */
+            .t-orange { color: #d97706; }                  /* 蜜柑燕麥橘 */
+            .t-yellow { color: #b45309; }                  /* 柔和琥珀棕黃 */
+            .t-green { color: #15803d; }                   /* 抹茶嫩綠 */
+            .t-blue { color: #1d4ed8; }                    /* 丹寧柔藍 */
+            .t-indigo { color: #4338ca; }                  /* 丁香柔紫藍 */
+            .t-purple { color: #6d28d9; }                  /* 薰衣草霧紫 */
+            .t-beige { color: #6b5a55; font-size: 0.9em; } /* 文青淺褐棕，用於說明文字 */
+
+            /* RWD 響應式排版：當螢幕寬度小於 900px 時自動變換（手機、平板） */
+            @media (max-width: 900px) {
+                .container {
+                    flex-direction: column;    /* 橫向並排改為直向垂直單欄排列 */
+                    padding: 20px;             /* 縮小內距符合手機螢幕 */
+                    align-items: center;       /* 所有直排卡片水平置中 */
+                }
+                .info, .links, .images {
+                    flex: 1 1 100%;            /* 寬度改為滿版 */
+                    width: 100%;
+                    max-width: 400px;          /* 限制手機最大寬度，避免卡片橫向拉得太長太醜 */
+                    margin-right: 0;           /* 清除原本的右邊距 */
+                    margin-bottom: 25px;       /* 改為增加下方間距，拉開垂直卡片間的距離 */
+                }
+                .info-title, .links-title {
+                    height: auto;              /* 取消固定高度 */
+                    display: block;            /* 回歸普通區塊 */
+                    text-align: center;        /* 文字置中 */
+                    padding-bottom: 12px;      
+                }
+            }
+
+            /* 櫻花飄落動畫的元件基本樣式 */
+            .sakura {
+                position: fixed;               /* 固定定位 */
+                top: -30px;                    /* 初始隱藏在頂部外 */
+                pointer-events: none;          /* 關鍵：滑鼠點擊可以直接穿透花瓣，完全不影響網頁內容點擊 */
+                transform-origin: center;       /* 旋轉中心點在正中央 */
+                will-change: transform, opacity; /* 效能優化小技巧 */
+                animation: fall var(--dur, 8s) linear forwards; /* 呼叫下落動畫 */
+                filter: drop-shadow(0 2px 4px rgba(220, 150, 170, 0.3)); /* 給櫻花加上專屬的粉色微弱陰影 */
+            }
+
+            /* 櫻花下落與旋轉動畫 */
+            @keyframes fall {
+                0% {
+                    transform: translateY(0) rotate(var(--rot-start, 0deg)); /* 頂部起點角度隨機 */
+                    opacity: 1;                /* 完全顯現 */
+                }
+                80% {
+                    opacity: 0.95;             /* 中途維持清晰 */
+                }
+                100% {
+                    transform: translateY(120vh) rotate(var(--rot-end, 360deg)); /* 墜落到底部外並旋轉完畢 */
+                    opacity: 0.2;              /* 到最下方時呈現浪漫的半透明淡出 */
+                }
+            }
+
+            /* 櫻花左右擺動（飄逸感）動畫 */
+            @keyframes sway {
+                0% { transform: translateX(0); }
+                50% { transform: translateX(var(--drift, 20px)); } /* 中途隨機橫向飄移幅度 */
+                100% { transform: translateX(0); }
+            }
+
+            /* 將左右擺動動畫綁定在櫻花內部的 path 花瓣元件上 */
+            .sakura .petal {
+                animation: sway var(--dur, 8s) ease-in-out infinite;
+            }
+
+            /* 漢堡選單按鈕樣式：優化為「日系簡約懸浮小圓標」 */
+            .hamburger-menu {
+                position: fixed;               /* 固定定位 */
+                top: 25px;                     /* 舒適的距離上方 25px */
+                left: 25px;                    /* 距離左方 25px */
+                display: flex;                 
+                align-items: center;           /* 垂直置中文字與 ☰ */
+                gap: 10px;                     
+                cursor: pointer;               
+                z-index: 100;                  /* 高於卡片層級 */
+                font-size: 1.1em;              
+                color: #b57c68;                /* 與標題相呼應的霧粉棕色 */
+                background: rgba(255, 255, 255, 0.75); /* 輕盈毛玻璃底 */
+                padding: 10px 18px;            /* 優雅的膠囊形狀內距 */
+                border-radius: 30px;           /* 全圓角膠囊按鈕 */
+                box-shadow: 0 4px 15px rgba(165, 143, 134, 0.15); /* 輕微投影 */
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                font-weight: 600;
+                transition: background 0.3s;
+            }
+            /* 懸停在漢堡按鈕上時稍微加深白色背景 */
+            .hamburger-menu:hover {
+                background: rgba(255, 255, 255, 0.95);
+            }
+
+            /* 漢堡選單點開後的下拉內容區塊（優化為奶油白輕質外盒） */
+            .dropdown-content {
+                display: none;                 /* 預設隱藏 */
+                position: fixed;               /* 固定定位 */
+                top: 75px;                     /* 精準落在漢堡按鈕下方 */
+                left: 25px;                    
+                background-color: rgba(255, 255, 255, 0.9); /* 高透光奶油白背景 */
+                backdrop-filter: blur(10px);   /* 質感毛玻璃效果 */
+                width: 220px;                  /* 固定寬度 */
+                border-radius: 20px;           /* 圓潤圓角 */
+                box-shadow: 0 10px 30px rgba(165, 143, 134, 0.2); /* 柔和深投影 */
+                border: 1px solid rgba(255, 255, 255, 0.7);
+                overflow-y: auto;              /* 超出高度自動捲動 */
+                max-height: calc(52px * 8);    /* 限制最大顯示高度大約為 8 個選項 */
+                z-index: 99;                   
+                flex-direction: column;        
+                gap: 6px;                      /* 項目小間距 */
+                padding: 10px;                 /* 整體內襯底 */
+                box-sizing: border-box;
+                opacity: 0;                    /* 初始透明度為 0 供淡入 */
+                /* 動畫轉變：帶有彈性上浮感 */
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+                transform: translateY(-10px);  /* 初始微幅上移 10px 做滑入視覺效果 */
+            }
+
+            /* 下拉選單啟動顯示樣式 */
+            .dropdown-content.show {
+                display: flex;                 /* 改為顯示 */
+                opacity: 1;                    /* 完全現形 */
+                transform: translateY(0);      /* 回歸原位，形成優雅滑落效果 */
+            }
+
+            /* 下拉選單內的超連結項目個體 */
+            .dropdown-content a {
+                display: block;                
+                padding: 12px 15px;            
+                color: #7c6a65;                /* 文青柔褐字體色 */
+                text-decoration: none;         
+                font-size: 0.95em;
+                background-color: rgba(245, 235, 230, 0.6); /* 預設淡淡的藕粉奶茶色底 */
+                border-radius: 12px;           /* 內層圓角 */
+                text-align: center;            
+                transition: all 0.2s;
+                font-weight: 600;
+            }
+
+            /* 滑鼠懸停在選單連結上時：溫柔的色彩反饋 */
+            .dropdown-content a:hover {
+                background-color: #e5ccbf;     /* 變成優雅的法式霧桃色 */
+                color: #5a4b47;                /* 文字稍微加深 */
+            }
+
+            /* 殘暴炎魔 / 拉圖斯 切換按鈕的樣式：像腮紅盤一樣的可愛切換鈕 */
+            .switch-btn {
+                padding: 8px 20px;             /* 內距 */
+                margin: 0 6px;                 /* 左右按鈕拉開一點點微小距離 */
+                border-radius: 15px;           /* 圓角圓潤 */
+                border: none;                  /* 移除邊框 */
+                background-color: #eee0d7;     /* 預設未選中時：莫蘭迪藕膚色 */
+                color: #8a736b;                /* 氣質深裸棕文字 */
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;     /* 所有切換狀態在 0.3 秒內優雅過渡 */
+                font-family: inherit;          /* 繼承全域字型 */
+            }
+
+            /* 當滑鼠移到切換按鈕上時 */
+            .switch-btn:hover {
+                background-color: #e5ccbf;     /* 藕粉奶茶色加深 */
+            }
+
+            /* 當按鈕被選中（活躍 active 狀態）時 */
+            .switch-btn.active {
+                background-color: #b57c68;     /* 變成經典的主視覺玫瑰霧金色 */
+                color: #fff;                   /* 文字翻白 */
+                box-shadow: 0 4px 10px rgba(181, 124, 104, 0.3); /* 幫選中的按鈕加上專屬柔光粉色微弱陰影 */
+            }
+            /* ==========================================================================
+               CSS 樣式表結束
+               ========================================================================== */
+        </style>
+    </head>
+    <body>
+        <div class="hamburger-menu">
+            <span>☰</span>
+            <span class="hamburger-text">歷史隊伍</span>
+        </div>
+
+        <div class="dropdown-content" id="dropdown-content">
+            <a href="https://docs.google.com/spreadsheets/d/1dyhsf2ydlAawIY2ha9OyLpdD1Q4MHOip632mFE-906w/edit?usp=sharing" target="_blank" class="btn">2026 05/21~05/27</a>
+            <a href="https://docs.google.com/spreadsheets/d/1S9dj5OgWg4zuEtnJ2cztHGmGlBucgWyJJWTkd4M9ixo/edit?usp=sharing" target="_blank" class="btn">2026 05/14~05/20</a>
+            <a href="https://docs.google.com/spreadsheets/d/1v3U82-AUR_fpWGu21aIi0VhOqlQfKcIvag4edWw4l4Y/edit?usp=sharing" target="_blank" class="btn">2026 05/07~05/13</a>
+            <a href="https://docs.google.com/spreadsheets/d/19Whx_iMzjLt5tClt1CJeVbmOMnZXylg-tt6TyNh7EcE/edit?usp=sharing" target="_blank" class="btn">2026 04/30~05/06</a>
+            <a href="https://docs.google.com/spreadsheets/d/1zRWMx-PKA8b5iWVKGHOKLRVK5ndp9YXrdW8nXbp3VBI/edit?usp=sharing" target="_blank" class="btn">2026 04/23~04/29</a>
+            <a href="https://docs.google.com/spreadsheets/d/1_3EEmyaFWtJ__z_-dIiwpndy7dJWXSROFbuIeerwN7k/edit?usp=sharing" target="_blank" class="btn">2026 04/16~04/22</a>
+            <a href="https://docs.google.com/spreadsheets/d/1ua84KFYO9pgp58v3HIjyKJr8sCL--LLf06XlqZneZd8/edit?usp=sharing" target="_blank">2026 04/09~04/15</a>
+            <a href="https://docs.google.com/spreadsheets/d/1qrfqAxh-Za0Zrb5xswor6dJZ-dvu_JZIYJnxXIpbb8E/edit?usp=sharing" target="_blank">2026 04/02~04/08</a>
+            <a href="https://docs.google.com/spreadsheets/d/1iTzJvAY2aogkXlDBYlzkiNRH36wM9o30Okc4yfUZbYY/edit?usp=sharing" target="_blank">2026 03/26~04/01</a>
+            <a href="https://docs.google.com/spreadsheets/d/1itUmQyBdJCAtE2epvTu5hNIkM3xrVNYcJkdMM6DXBEs/edit?usp=sharing" target="_blank">2026 03/19~03/25</a>
+            <a href="https://docs.google.com/spreadsheets/d/1jhL7JqJG0_5_lUdP2OWY3nKHJI-GxwqEFR9Kb6e_cJU/edit?usp=sharing" target="_blank">2026 03/12~03/18</a>
+            <a href="https://docs.google.com/spreadsheets/d/1DrBeBQzAO0uipK8Y_t9Ba9Mmh6-dMDD2onwSLFc_3zg/edit?usp=sharing" target="_blank">2026 03/05~03/11</a>
+        </div>
+
+        <div class="container">
+            
+            <div class="info">
+                <div class="info-title">活動資訊</div>
+                
+                <div class="switch-btns" style="margin: 10px 0">
+                    <button id="btn-flame" class="switch-btn">殘暴炎魔</button>
+                    <button id="btn-latus" class="switch-btn">拉圖斯</button>
+                </div>
+
+                <div id="flame" class="event-content">
+                    <div class="t-red">建議等級　140等以上</div>
+                    <br />
+                    <div class="t-purple">入場費：雪花x2</div>
+                    <br />
+                    <div class="t-beige">※ 攻擊力為建議值，</div>
+                    <div class="t-beige">實際依裝備 / 職業 / 熟練度不同。</div>
+                </div>
+
+                <div id="latus" class="event-content" style="display: none">
+                    <div class="t-red">建議等級　110等以上</div>
+                    <div class="t-orange">劍　士　－　 120等『UP』－－－</div>
+                    <div class="t-yellow">祭　司　－　　700　『AP』－乾表</div>
+                    <div class="t-yellow">冰　雷　－　　650　『AP』－乾表</div>
+                    <div class="t-yellow">火　毒　－　　650　『AP]－乾表</div>
+                    <div class="t-green">遊　俠　－　2,100　『AD』－乾表</div>
+                    <div class="t-green">狙擊手　－　2,200　『AD』－乾表</div>
+                    <div class="t-blue">神槍手　－　2,000　『AD』－乾表</div>
+                    <div class="t-blue">格鬥家　－　2,700　『AD』－乾表</div>
+                    <div class="t-indigo">神　偷　－　2,200　『AD』－乾表</div>
+                    <div class="t-indigo">暗殺者　－　1,700　『AD』－乾表</div>
+                    <br />
+                    <div class="t-purple">入場費：雪花x1 ＋ D片x1</div>
+                    <br />
+                    <div class="t-beige">※ 攻擊力為建議值，</div>
+                    <div class="t-beige">實際依裝備 / 職業 / 熟練度不同。</div>
+                </div>
+            </div>
+
+            <div class="links">
+                <div class="links-title">報名連結</div>
+                <a href="https://docs.google.com/spreadsheets/d/1rIDU9XIKEphTBqy5hg9Gj0TuJJvsh6KgVS9LOxfABZM/edit?usp=sharing" target="_blank" class="btn">2026 05/28~06/03</a>
+                <a href="https://docs.google.com/spreadsheets/d/1KMITodSArSM3S-Ur9rD8v5ExdvXHG_xX0wBgA2VZydM/edit?usp=sharing" target="_blank" class="btn">2026 06/04~06/10</a>
+                <a href="javascript:void(0);" class="btn">　</a>
+                <a href="javascript:void(0);" class="btn">　</a>
+                <a href="javascript:void(0);" class="btn">　</a>
+                <a href="javascript:void(0);" class="btn">　</a>
+                <a href="javascript:void(0);" class="btn">　</a>
+            </div>
+
+            <div class="images">
+                <img id="img-flame" src="https://raw.githubusercontent.com/Sin-Nan-0510/Sin-Nan-0510/main/炎魔.gif" alt="殘暴炎魔" />
+                <img id="img-latus" class="boss-img" src="https://raw.githubusercontent.com/Sin-Nan-0510/Sin-Nan-0510/main/拉圖斯.gif" alt="拉圖斯" style="display: none" />
+            </div>
+        </div>
+
+        <script>
+            // ==========================================================================
+            // JavaScript 腳本區開始
+            // ==========================================================================
+
+            // 1. 櫻花隨機產生與飄落特效功能 (IIFE 立即執行函式規避全域變數汙染)
+            (function () {
+                const svgns = "http://www.w3.org/2000/svg"; // 宣告 SVG 特有的命名空間 XML 網址
+                const rand = (min, max) => min + Math.random() * (max - min); // 快速產生範圍內隨機任意浮點數的計算箭頭函式
+
+                // 核心：動態建立單片櫻花瓣的函式
+                function createPetal() {
+                    const svg = document.createElementNS(svgns, "svg"); // 以專屬命名空間建立一個 SVG 元素節點
+                    svg.setAttribute("viewBox", "0 0 100 100");        // 設定畫布內部比例尺寸為 100x100
+                    svg.classList.add("sakura");                       // 加上 CSS 的 .sakura 基礎動畫樣式
+
+                    // 透過 CSS 隨機變數，將各種隨機數據傳給 CSS 動畫，做到每片櫻花速度、角度、大小、位置都完全不同的層次感
+                    const dur = rand(6, 12);                           // 隨機生成掉落時間 6 ~ 12 秒
+                    svg.style.setProperty("--dur", dur + "s");
+                    svg.style.setProperty("--rot-start", rand(-20, 20) + "deg"); // 初始隨機旋轉角角度
+                    svg.style.setProperty("--rot-end", rand(180, 540) + "deg");  // 落地時最終旋轉圈數角度
+                    svg.style.setProperty("--drift", rand(10, 40) + "px");       // 左右隨風飄逸的最大橫向振幅
+                    svg.style.left = rand(0, 100) + "vw";               // 隨機在瀏覽器橫向視窗寬度 (0~100vw) 的任何一處出生
+                    svg.style.opacity = rand(0.8, 1);                  // 隨機微幅透明度，更具透明自然感
+                    const size = rand(18, 50);                         // 隨機產生大小介於 18px 到 50px 的花瓣
+                    svg.style.width = size + "px";
+                    svg.style.height = size + "px";
+
+                    // 動態生成獨一無二的漸層顏色 (粉紅色系漸層)，告別死板的花瓣色調
+                    const defs = document.createElementNS(svgns, "defs");
+                    const grad = document.createElementNS(svgns, "linearGradient");
+                    const gid = "grad" + Date.now() + Math.random();   // 以時間戳記加隨機數組成全網唯一的漸層 ID
+                    grad.setAttribute("id", gid);
+                    grad.setAttribute("x1", "0%");
+                    grad.setAttribute("y1", "0%");
+                    grad.setAttribute("x2", "100%");
+                    grad.setAttribute("y2", "100%");
+
+                    const s1 = document.createElementNS(svgns, "stop");
+                    s1.setAttribute("offset", "0%");
+                    s1.setAttribute("stop-color", "#ffe3f1");          // 漸層起點：優雅清透淡櫻粉
+                    const s2 = document.createElementNS(svgns, "stop");
+                    s2.setAttribute("offset", "70%");
+                    s2.setAttribute("stop-color", "#ffb3d1");          // 漸層終點：甜美馬卡龍蜜桃粉
+
+                    grad.appendChild(s1);
+                    grad.appendChild(s2);
+                    defs.appendChild(grad);
+                    svg.appendChild(defs);
+
+                    // 以 SVG 幾何數據繪製精準完美的櫻花瓣形狀 Path
+                    const path = document.createElementNS(svgns, "path");
+                    path.setAttribute("class", "petal");               // 套用 CSS 左右擺動的 sway 動畫
+                    path.setAttribute("fill", `url(#${gid})`);          // 花瓣填滿剛剛精心調製的專屬漸層顏色
+                    path.setAttribute("d", "M50 10 C70 25,80 45,60 70 C50 85,40 85,30 70 C10 45,30 25,50 10 Z"); // 花瓣貝氏曲線數據
+                    path.setAttribute("opacity", rand(0.85, 1));
+                    svg.appendChild(path);
+
+                    document.body.appendChild(svg);                    // 將組裝好的櫻花 SVG 元素正式塞入網頁
+
+                    // 效能防護鎖：當櫻花墜落動畫播放完畢時，自動觸發事件將該節點移除，防止長期開啟導致網頁卡頓
+                    svg.addEventListener("animationend", () => svg.remove());
+                }
+                
+                let sakuraInterval; // 宣告計時器儲存容器
+
+                // 啟動櫻花製造機 (每 500 毫秒產生一片新櫻花)
+                function startSakura() {
+                    sakuraInterval = setInterval(createPetal, 500);
+                }
+
+                // 關閉櫻花製造機
+                function stopSakura() {
+                    clearInterval(sakuraInterval);
+                }
+
+                // 智慧分頁節能監聽：當使用者切換去別的分頁時自動暂停生產櫻花，回頁面時重啟，完美保障效能不耗電
+                document.addEventListener("visibilitychange", () => {
+                    if (document.hidden) {
+                        stopSakura(); 
+                    } else {
+                        startSakura(); 
+                    }
+                });
+
+                // 首頁第一次載入完畢，無縫初始化櫻花特效
+                startSakura();
+            })();
+
+            // 2. 漢堡選單點擊展開 / 收合控制邏輯
+            const hamburger = document.querySelector(".hamburger-menu"); // 抓取漢堡小圓標按鈕
+            const dropdown = document.getElementById("dropdown-content"); // 抓取歷史隊伍下拉窗本體
+
+            // 監聽漢堡按鈕點擊
+            hamburger.addEventListener("click", (e) => {
+                e.stopPropagation();           // 阻止事件冒泡：點按鈕時不要觸發到下方 window 全域的收合事件
+                dropdown.classList.toggle("show"); // 自動切換（有 .show 類別就關閉，沒有就開啟）來達成收折效果
+            });
+
+            // 貼心體驗：當使用者點擊網頁上漢堡選單以外的任何空白處時，自動將選單優雅收合
+            window.addEventListener("click", () => dropdown.classList.remove("show"));
+            // 防止點擊選單內部空白或項目本身時，無預警地讓整個選單死掉消失
+            dropdown.addEventListener("click", (e) => e.stopPropagation());
+
+            // 3. 中欄報名按鈕自動彩虹標色 (核心不變，但色票升級為：夢幻柔粉馬卡龍彩虹色系)
+            const rainbowColors = [
+                "#f29494", // 柔霧櫻紅
+                "#f2b380", // 蜜柑粉橘
+                "#e2c76f", // 柔軟茉莉黃
+                "#8ec49a", // 薄荷薄綠
+                "#8bcbc9", // 冰晶柔藍
+                "#8ba3eb", // 迷霧晴藍
+                "#b99be0"  // 薰衣草淡紫
+            ]; 
+            const buttons = document.querySelectorAll(".links .btn"); // 抓取中欄的所有按鈕項目
+
+            // 迴圈自動上色工程
+            buttons.forEach((btn, index) => {
+                const color = rainbowColors[index % rainbowColors.length]; // 依序抓取顏色（超過 7 個按鈕會自動循環分配）
+                btn.style.background = color; // 替按鈕加上馬卡龍底色
+
+                // 監聽滑鼠移入：按鈕變亮 108% 營造微光呼吸感
+                btn.style.transition = "filter 0.2s"; // 確保亮度過渡柔和
+                btn.addEventListener("mouseover", () => (btn.style.filter = "brightness(108%)"));
+                // 監聽滑鼠移出：還原標準亮度
+                btn.addEventListener("mouseout", () => (btn.style.filter = "brightness(100%)"));
+            });
+
+            // 4. 左欄活動資訊與右欄 Boss 圖片頁籤切換功能 (殘暴炎魔 / 拉圖斯)
+            // 【完全校正版】：變數、ID 節點與中文字面排版順序 100% 吻合，英文語意完美歸位！
+            const btnFlame = document.getElementById("btn-flame"); // 抓取第一個按鈕：殘暴炎魔 (Flame)
+            const btnLatus = document.getElementById("btn-latus"); // 抓取第二個按鈕：拉圖斯 (Latus)
+            const flame = document.getElementById("flame");       // 抓取殘暴炎魔文字資訊區
+            const latus = document.getElementById("latus");       // 抓取拉圖斯文字資訊區
+            const imgFlame = document.getElementById("img-flame"); // 抓取殘暴炎魔 GIF 圖
+            const imgLatus = document.getElementById("img-latus"); // 抓取拉圖斯 GIF 圖
+
+            // 初始化設定：網頁打開時，第一個按鈕「殘暴炎魔」預設呈現發亮活躍狀態
+            btnFlame.classList.add("active");
+
+            // 切換點擊事件邏輯 A：點擊第一個按鈕「殘暴炎魔」
+            btnFlame.addEventListener("click", () => {
+                flame.style.display = "block";    // 秀出殘暴炎魔文字資訊
+                latus.style.display = "none";     // 藏起拉圖斯文字資訊
+                imgFlame.style.display = "block"; // 秀出殘暴炎魔 GIF 圖片
+                imgLatus.style.display = "none";  // 藏起拉圖斯 GIF 圖片
+                btnFlame.classList.add("active"); // 殘暴炎魔按鈕呈現高亮粉霧金狀態
+                btnLatus.classList.remove("active"); // 拉圖斯按鈕縮回未選取狀態
+            });
+
+            // 切換點擊事件邏輯 B：點擊第二個按鈕「拉圖斯」
+            btnLatus.addEventListener("click", () => {
+                flame.style.display = "none";     // 藏起殘暴炎魔文字資訊
+                latus.style.display = "block";    // 秀出拉圖斯文字資訊
+                imgFlame.style.display = "none";  // 藏起殘暴炎魔 GIF 圖片
+                imgLatus.style.display = "block"; // 秀出拉圖斯 GIF 圖片
+                btnLatus.classList.add("active"); // 拉圖斯按鈕呈現高亮粉霧金狀態
+                btnFlame.classList.remove("active"); // 殘暴炎魔按鈕縮回未選取狀態
+            });
+        </script>
+        
+        <audio controls loop class="music-player" id="bgm">
+            <source src="music.mp3" type="audio/mpeg" />
+        </audio>
+        
+        <script>
+            // 背景音樂預設音量微調控制功能
+            document.getElementById("bgm").volume = 0.3; // 透過 JS 控制音量上限為 30% 防止開場嚇到使用者
+        </script>
+
+        <div class="color-picker">
+            <div class="color-circle" style="background: #e8c5c5" onclick="changeColor('#e8c5c5')"></div>
+            <div class="color-circle" style="background: #f7ede2" onclick="changeColor('#f7ede2')"></div>
+            <div class="color-circle" style="background: #dcd6eb" onclick="changeColor('#dcd6eb')"></div>
+            <div class="color-circle" style="background: #cfe2f3" onclick="changeColor('#cfe2f3')"></div>
+            <div class="color-circle" style="background: #ded9d5" onclick="changeColor('#ded9d5')"></div>
+        </div>
+
+        <script>
+            // 換背景顏色控制核心函式
+            document.body.style.backgroundColor = "#f7ede2"; // 全網頁初始化第一次開起時的預設背景色：燕麥奶茶色
+
+            // 更換網頁背景顏色的實作函式（配合 CSS 處的 transition 達成柔和變色效果）
+            function changeColor(color) {
+                document.body.style.backgroundColor = color;
+            }
+            // ==========================================================================
+            // JavaScript 腳本區結束
+            // ==========================================================================
+        </script>
+    </body>
+</html>
