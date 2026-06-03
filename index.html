@@ -504,12 +504,10 @@
                 <span>選擇歌曲 (點擊播放/暫停)</span>
                 <input type="range" class="volume-slider" id="volume-control" min="0" max="1" step="0.1" value="0.3" title="調整音量" />
             </div>
-            <ul class="song-list">
-                <li class="song-item playing" data-src="Shakira_WakaWaka.mp3">Shakira - Waka Waka</li>
-                <li class="song-item playing" data-src="Alan Walker - A World I Don’t Know.mp3">Alan Walker - A World I Don’t Know</li>
-                <li class="song-item" data-src="您的第二首歌曲檔名或網址.mp3"></li>
-                <li class="song-item" data-src="您的第三首歌曲檔名或網址.mp3"></li>
-            </ul>
+                <ul class="song-list">
+                    <li class="song-item" data-src="Shakira_WakaWaka.mp3">Shakira - Waka Waka</li>
+                    <li class="song-item" data-src="Alan Walker - A World I Don’t Know.mp3">Alan Walker - A World I Don’t Know</li>
+                </ul>
         </div>
 
         <audio loop id="bgm">
@@ -685,54 +683,57 @@
             });
 
 
-            // ==========================================================================
-            // 音樂點唱機核心控制邏輯
-            // ==========================================================================
-            const audio = document.getElementById("bgm");
-            const musicToggle = document.getElementById("music-toggle");
-            const musicDropdown = document.getElementById("music-dropdown");
-            const volumeControl = document.getElementById("volume-control");
-            const songItems = document.querySelectorAll(".song-list .song-item");
+// ==========================================================================
+// 音樂點唱機核心控制邏輯 (修正版)
+// ==========================================================================
+const audio = document.getElementById("bgm");
+const musicToggle = document.getElementById("music-toggle");
+const musicDropdown = document.getElementById("music-dropdown");
+const volumeControl = document.getElementById("volume-control");
+const songItems = document.querySelectorAll(".song-list .song-item");
 
-            // 初始化預設音量
-            audio.volume = 0.3;
+// 初始化音量
+audio.volume = 0.3;
 
-            // 控制音樂選單的彈出與收合
-            musicToggle.addEventListener("click", (e) => {
-                e.stopPropagation();
-                // 打開音樂選單時，順便關閉歷史隊伍防止重疊
-                dropdown.classList.remove("show");
-                musicDropdown.classList.toggle("show");
-            });
-            // 點網頁其他地方自動關閉音樂選單
-            window.addEventListener("click", () => musicDropdown.classList.remove("show"));
-            musicDropdown.addEventListener("click", (e) => e.stopPropagation());
+// 選單顯示控制
+musicToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.classList.remove("show");
+    musicDropdown.classList.toggle("show");
+});
 
-            // 串接音量滑桿控制
-            volumeControl.addEventListener("input", (e) => {
-                audio.volume = e.target.value;
-            });
+window.addEventListener("click", () => musicDropdown.classList.remove("show"));
+musicDropdown.addEventListener("click", (e) => e.stopPropagation());
 
-            // 點擊曲目切換與播放/暫停邏輯
-            songItems.forEach(item => {
-                item.addEventListener("click", () => {
-                    const targetSrc = item.getAttribute("data-src");
-                    
-                    if (item.classList.contains("playing")) {
-                        if (audio.paused) {
-                            audio.play().catch(err => console.log("播放被瀏覽器阻擋:", err));
-                        } else {
-                            audio.pause();
-                        }
-                    } 
-                    else {
-                        songItems.forEach(i => i.classList.remove("playing"));
-                        item.classList.add("playing");
-                        audio.src = targetSrc;
-                        audio.play().catch(err => console.log("播放被瀏覽器阻擋:", err));
-                    }
-                });
-            });
+// 音量控制
+volumeControl.addEventListener("input", (e) => {
+    audio.volume = e.target.value;
+});
+
+// 核心：切換歌曲與播放邏輯
+songItems.forEach(item => {
+    item.addEventListener("click", () => {
+        const targetSrc = item.getAttribute("data-src");
+        
+        // 判斷是否為正在播放的歌曲
+        if (item.classList.contains("playing")) {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        } else {
+            // 切換樣式
+            songItems.forEach(i => i.classList.remove("playing"));
+            item.classList.add("playing");
+            
+            // 更新來源並強制載入
+            audio.src = targetSrc;
+            audio.load();
+            audio.play().catch(err => console.log("播放失敗:", err));
+        }
+    });
+});
         </script>
 
         <div class="color-picker">
