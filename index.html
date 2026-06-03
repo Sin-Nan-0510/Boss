@@ -5,6 +5,10 @@
         <title>活動資訊</title>
         <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet" />
         <style>
+            /* ==========================================================
+               頁面樣式總表
+               本區負責整個網站的外觀、動畫、排版與RWD設定
+               ========================================================== */
             /* ==========================================================================
                CSS 樣式表開始 (視覺風格：浪漫大人系輕甜風)
                ========================================================================== */
@@ -477,16 +481,19 @@
         </style>
     </head>
     <body>
+        <!-- 歷史隊伍開關按鈕：點擊後顯示歷史隊伍紀錄 -->
         <div class="hamburger-menu">
             <span>☰</span>
             <span class="hamburger-text">歷史隊伍</span>
         </div>
 
+        <!-- 音樂播放器開關按鈕 -->
         <div class="music-box-toggle" id="music-toggle">
             <span>🎵</span>
             <span>音樂</span>
         </div>
 
+        <!-- 歷史隊伍下拉選單內容 -->
         <div class="dropdown-content" id="dropdown-content">
             <a href="https://docs.google.com/spreadsheets/d/1rIDU9XIKEphTBqy5hg9Gj0TuJJvsh6KgVS9LOxfABZM/edit?usp=sharing" target="_blank" class="btn">2026 05/28~06/03</a>
             <a href="https://docs.google.com/spreadsheets/d/1dyhsf2ydlAawIY2ha9OyLpdD1Q4MHOip632mFE-906w/edit?usp=sharing" target="_blank" class="btn">2026 05/21~05/27</a>
@@ -499,6 +506,7 @@
             <a href="https://docs.google.com/spreadsheets/d/1qrfqAxh-Za0Zrb5xswor6dJZ-dvu_JZIYJnxXIpbb8E/edit?usp=sharing" target="_blank">2026 04/02~04/08</a>
         </div>
 
+        <!-- 音樂播放器選單 -->
         <div class="music-dropdown" id="music-dropdown">
             <div class="music-header">
                 <span>選擇歌曲 (點擊播放/暫停)</span>
@@ -510,12 +518,15 @@
                 </ul>
         </div>
 
+        <!-- 背景音樂播放器（隱藏） -->
         <audio loop id="bgm">
             <source id="audio-source" src="Alan Walker - A World I Don’t Know.mp3" type="audio/mpeg" />
         </audio>
 
 
+        <!-- 主內容容器 -->
         <div class="container">
+            <!-- 左側：活動資訊區 -->
             <div class="info">
                 <div class="info-title">活動資訊</div>
                 
@@ -543,6 +554,7 @@
                 </div>
             </div>
 
+            <!-- 中間：報名連結區 -->
             <div class="links">
                 <div class="links-title">報名連結</div>
                 <a href="https://docs.google.com/spreadsheets/d/1KMITodSArSM3S-Ur9rD8v5ExdvXHG_xX0wBgA2VZydM/edit?usp=sharing" target="_blank" class="btn">2026 06/04~06/10</a>
@@ -554,6 +566,7 @@
                 <a href="javascript:void(0);" class="btn">　</a>
             </div>
 
+            <!-- 右側：Boss圖片展示區 -->
             <div class="images">
                 <img id="img-flame" src="https://raw.githubusercontent.com/Sin-Nan-0510/Boss/main/炎魔.gif" alt="殘暴炎魔" />
                 <img id="img-latus" class="boss-img" src="https://raw.githubusercontent.com/Sin-Nan-0510/Boss/main/拉圖斯.gif" alt="拉圖斯" style="display: none" />
@@ -561,6 +574,7 @@
         </div>
 
 
+        <!-- JavaScript 功能控制區 -->
         <script>
             // ==========================================================================
             // JavaScript 腳本區開始
@@ -629,6 +643,12 @@
                 startSakura();
             })();
 
+            
+            // ==========================================================
+            // 歷史隊伍選單控制系統
+            // 功能：開啟與關閉歷史隊伍清單
+            // ==========================================================
+
             // 2. 歷史隊伍漢堡選單控制邏輯
             const hamburger = document.querySelector(".hamburger-menu");
             const dropdown = document.getElementById("dropdown-content");
@@ -642,6 +662,12 @@
             window.addEventListener("click", () => dropdown.classList.remove("show"));
             dropdown.addEventListener("click", (e) => e.stopPropagation());
 
+            
+            // ==========================================================
+            // 報名按鈕彩虹配色系統
+            // 功能：自動依序套用不同顏色
+            // ==========================================================
+
             // 3. 中欄報名按鈕自動彩虹標色
             const rainbowColors = ["#f29494", "#f2b380", "#e2c76f", "#8ec49a", "#8bcbc9", "#8ba3eb", "#b99be0"]; 
             const buttons = document.querySelectorAll(".links .btn");
@@ -653,6 +679,12 @@
                 btn.addEventListener("mouseover", () => (btn.style.filter = "brightness(108%)"));
                 btn.addEventListener("mouseout", () => (btn.style.filter = "brightness(100%)"));
             });
+
+            
+            // ==========================================================
+            // Boss資訊切換系統
+            // 功能：切換殘暴炎魔與拉圖斯資訊及圖片
+            // ==========================================================
 
             // 4. 左欄活動資訊與右欄 Boss 圖片頁籤切換功能 (殘暴炎魔 / 拉圖斯)
             const btnFlame = document.getElementById("btn-flame");
